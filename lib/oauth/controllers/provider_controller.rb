@@ -48,8 +48,10 @@ module OAuth
               @token.authorize!(current_user)
               if @token.oauth10?
                 @redirect_url = URI.parse(params[:oauth_callback] || @token.client_application.callback_url)
+              elsif @token.oob?
+                @redirect_url = @token.client_application.callback_url.nil? ? "" : URI.parse(@token.client_application.callback_url)
               else
-                @redirect_url = URI.parse(@token.oob? ? @token.client_application.callback_url : @token.callback_url)
+                @redirect_url = URI.parse(@token.callback_url)
               end
               
               unless @redirect_url.to_s.blank?
